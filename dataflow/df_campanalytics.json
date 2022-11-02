@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "ds_campaignanalytics_csv",
-						"type": "DatasetReference"
-					},
 					"name": "campaignanalyticscsv",
 					"description": "This source files contains the data in CSV format"
 				}
@@ -35,8 +31,7 @@
 				"          State as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> campaignanalyticscsv",
+				"     validateSchema: false) ~> campaignanalyticscsv",
 				"campaignanalyticscsv sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
