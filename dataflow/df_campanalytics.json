@@ -1,0 +1,35 @@
+{
+	"name": "df_campanalytics",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_campaignanalytics_csv",
+						"type": "DatasetReference"
+					},
+					"name": "campaignanalyticscsv",
+					"description": "This source files contains the data in CSV format"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Region as string,",
+				"          Country as string,",
+				"          Product_Category as string,",
+				"          Campaign_Name as string,",
+				"          Revenue as string,",
+				"          Revenue_Target as string,",
+				"          City as string,",
+				"          State as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> campaignanalyticscsv"
+			]
+		}
+	}
+}
