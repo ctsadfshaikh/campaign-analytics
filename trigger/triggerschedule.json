@@ -1,0 +1,25 @@
+{
+	"name": "triggerschedule",
+	"properties": {
+		"description": "This trigger is used for triggering pipeline at 10:00PM IST",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_campaignanalytics",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-11-02T22:00:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
