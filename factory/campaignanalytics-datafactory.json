@@ -1,0 +1,9 @@
+{
+	"name": "campaignanalytics-datafactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c690eb70-9dda-4b97-b3ff-dae703bcf4c6",
+		"tenantId": "271c79d5-6617-45a3-a5ce-d295fe3a5fa7"
+	}
+}
