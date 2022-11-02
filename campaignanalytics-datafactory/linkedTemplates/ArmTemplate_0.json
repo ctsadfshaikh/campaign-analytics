@@ -1,0 +1,396 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "campaignanalytics-datafactory"
+		},
+		"ls_campaignanalytics_csv_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_campaignanalytics_csv'"
+		},
+		"ls_sqldb_campaignanalytics_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_sqldb_campaignanalytics'"
+		},
+		"ls_campaignanalytics_csv_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://shoaibdatalake.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_campaignanalytics_csv')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_campaignanalytics_csv_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_campaignanalytics_csv_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sqldb_campaignanalytics')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_sqldb_campaignanalytics_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sqltable_campaignanalytics')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sqldb_campaignanalytics",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductCategory",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CampaignName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Revenue",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "RevenueTarget",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "City",
+						"type": "nvarchar"
+					},
+					{
+						"name": "State",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CampaignAnalytics"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sqldb_campaignanalytics')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_campaignanalytics')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_campaignanalytics_csv",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "campaignanalytics.csv",
+						"folderPath": "Campaing Analytics",
+						"fileSystem": "data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_campaignanalytics_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sqldb_camp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sqldb_campaignanalytics",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ProductCategory",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CampaignName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Revenue",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "RevenueTarget",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 2
+					},
+					{
+						"name": "City",
+						"type": "nvarchar"
+					},
+					{
+						"name": "State",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "CampaignAnalytics"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sqldb_campaignanalytics')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_campaignanalytics')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_campaignanalytics",
+								"type": "DatasetReference"
+							},
+							"name": "srccampaignanalytics"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sqldb_camp",
+								"type": "DatasetReference"
+							},
+							"name": "tgtsqldbcamp"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sltrenamingfields"
+						},
+						{
+							"name": "dcformattingfields"
+						},
+						{
+							"name": "sltremovingunwantedfields"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {_col0_} as string,",
+						"          {_col1_} as string,",
+						"          {_col2_} as string,",
+						"          {_col3_} as string,",
+						"          {_col4_} as string,",
+						"          {_col5_} as double,",
+						"          {_col6_} as string,",
+						"          {_col7_} as double,",
+						"          {_col8_} as string,",
+						"          {_col9_} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     skipLines: 1) ~> srccampaignanalytics",
+						"srccampaignanalytics select(mapColumn(",
+						"          Region = {_col0_},",
+						"          Country = {_col1_},",
+						"          ProductCategory = {_col2_},",
+						"          CampaignName = {_col3_},",
+						"          RevenuePart1 = {_col4_},",
+						"          Revenue = {_col5_},",
+						"          RevenueTargetPart1 = {_col6_},",
+						"          RevenueTarget = {_col7_},",
+						"          City = {_col8_},",
+						"          State = {_col9_}",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sltrenamingfields",
+						"sltrenamingfields derive(Revenue = toDecimal(replace(concat(toString(RevenuePart1), toString(Revenue)), '\\\\', ''), 10, 2, '$###,###.##'),",
+						"          RevenueTarget = toDecimal(replace(concat(toString(RevenueTargetPart1), toString(RevenueTarget)), '\\\\', ''), 10, 2, '$###,###.##')) ~> dcformattingfields",
+						"dcformattingfields select(mapColumn(",
+						"          Region,",
+						"          Country,",
+						"          ProductCategory,",
+						"          CampaignName,",
+						"          Revenue,",
+						"          RevenueTarget,",
+						"          City,",
+						"          State",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sltremovingunwantedfields",
+						"sltremovingunwantedfields sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Region as string,",
+						"          Country as string,",
+						"          ProductCategory as string,",
+						"          CampaignName as string,",
+						"          Revenue as decimal(10,2),",
+						"          RevenueTarget as decimal(10,2),",
+						"          City as string,",
+						"          State as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Region,",
+						"          Country,",
+						"          ProductCategory,",
+						"          CampaignName,",
+						"          Revenue,",
+						"          RevenueTarget,",
+						"          City,",
+						"          State",
+						"     )) ~> tgtsqldbcamp"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_campaignanalytics')]",
+				"[concat(variables('factoryId'), '/datasets/sqldb_camp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_campaignanalytics')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "df_CampaignAnalytics",
+						"description": "This data flow describes us about the transfer of data from table t",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_campaignanalytics",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srccampaignanalytics": {},
+									"tgtsqldbcamp": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Coarse"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_campaignanalytics')]"
+			]
+		}
+	]
+}
