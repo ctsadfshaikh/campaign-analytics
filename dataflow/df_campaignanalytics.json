@@ -9,20 +9,27 @@
 						"referenceName": "ds_campaignanalytics",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "srccampaignanalytics"
 				}
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"dataset": {
+						"referenceName": "sqldb_camp",
+						"type": "DatasetReference"
+					},
+					"name": "tgtsqldbcamp"
 				}
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "sltrenamingfields"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "dcformattingfields"
+				},
+				{
+					"name": "sltremovingunwantedfields"
 				}
 			],
 			"scriptLines": [
@@ -41,8 +48,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     skipLines: 1) ~> source1",
-				"source1 select(mapColumn(",
+				"     skipLines: 1) ~> srccampaignanalytics",
+				"srccampaignanalytics select(mapColumn(",
 				"          Region = {_col0_},",
 				"          Country = {_col1_},",
 				"          ProductCategory = {_col2_},",
@@ -55,13 +62,52 @@
 				"          State = {_col9_}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(Revenue = toDecimal(replace(concat(toString(RevenuePart1), toString(Revenue)), '\\\\', ''), 10, 2, '$###,###.##'),",
-				"          RevenueTarget = toDecimal(replace(concat(toString(RevenueTargetPart1), toString(RevenueTarget)), '\\\\', ''), 10, 2, '$###,###.##')) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     skipDuplicateMapOutputs: true) ~> sltrenamingfields",
+				"sltrenamingfields derive(Revenue = toDecimal(replace(concat(toString(RevenuePart1), toString(Revenue)), '\\\\', ''), 10, 2, '$###,###.##'),",
+				"          RevenueTarget = toDecimal(replace(concat(toString(RevenueTargetPart1), toString(RevenueTarget)), '\\\\', ''), 10, 2, '$###,###.##')) ~> dcformattingfields",
+				"dcformattingfields select(mapColumn(",
+				"          Region,",
+				"          Country,",
+				"          ProductCategory,",
+				"          CampaignName,",
+				"          Revenue,",
+				"          RevenueTarget,",
+				"          City,",
+				"          State",
+				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> sltremovingunwantedfields",
+				"sltremovingunwantedfields sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Region as string,",
+				"          Country as string,",
+				"          ProductCategory as string,",
+				"          CampaignName as string,",
+				"          Revenue as decimal(10,2),",
+				"          RevenueTarget as decimal(10,2),",
+				"          City as string,",
+				"          State as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Region,",
+				"          Country,",
+				"          ProductCategory,",
+				"          CampaignName,",
+				"          Revenue,",
+				"          RevenueTarget,",
+				"          City,",
+				"          State",
+				"     )) ~> tgtsqldbcamp"
 			]
 		}
 	}
