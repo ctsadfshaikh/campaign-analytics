@@ -29,7 +29,7 @@
 				"          Column_7 as string,",
 				"          Column_8 as string",
 				"     ),",
-				"     allowSchemaDrift: false,",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourcecampaignanayltics",
 				"sourcecampaignanayltics select(mapColumn(",
