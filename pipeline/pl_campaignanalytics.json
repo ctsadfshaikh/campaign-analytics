@@ -17,7 +17,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "df_campaignanalytics",
 						"type": "DataFlowReference"
 					},
 					"compute": {
