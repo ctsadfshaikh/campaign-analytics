@@ -15,6 +15,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "sqltable_campaignanalytics",
+						"type": "DatasetReference"
+					},
 					"name": "targetsql"
 				}
 			],
@@ -35,8 +39,24 @@
 				"     ignoreNoFilesFound: false) ~> campaignanalyticscsv",
 				"campaignanalyticscsv sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          Region as string,",
+				"          Country as string,",
+				"          ProductCategory as string,",
+				"          CampaignName as string,",
+				"          Revenue as decimal(10,2),",
+				"          RevenueTarget as decimal(10,2),",
+				"          City as string,",
+				"          State as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> targetsql"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> targetsql"
 			]
 		}
 	}
